@@ -39,9 +39,21 @@ const ClickDataView = () => {
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    const totalPages = Math.ceil(filteredClicks.length / itemsPerPage);
+
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredClicks.length / itemsPerPage); i++) {
+    for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
+    }
+
+    const maxPageButtons = 5;
+    const halfPageButtons = Math.floor(maxPageButtons / 2);
+    const startPage = Math.max(currentPage - halfPageButtons, 1);
+    const endPage = Math.min(startPage + maxPageButtons - 1, totalPages);
+
+    const visiblePageNumbers = [];
+    for (let i = startPage; i <= endPage; i++) {
+        visiblePageNumbers.push(i);
     }
 
     if (loading) return <div>Loading...</div>;
@@ -85,13 +97,49 @@ const ClickDataView = () => {
             </table>
             <nav className="mt-4">
                 <ul className="pagination flex justify-center">
-                    {pageNumbers.map(number => (
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button
+                            onClick={() => paginate(1)}
+                            className="page-link p-1 w-8 border rounded mx-1"
+                            disabled={currentPage === 1}
+                        >
+                            &laquo;
+                        </button>
+                    </li>
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            className="page-link p-1 w-8 border rounded mx-1"
+                            disabled={currentPage === 1}
+                        >
+                            &lsaquo;
+                        </button>
+                    </li>
+                    {visiblePageNumbers.map(number => (
                         <li key={number} className={`page-item ${number === currentPage ? 'active' : ''} mx-1`}>
-                            <button onClick={() => paginate(number)} className="page-link p-2 border rounded">
+                            <button onClick={() => paginate(number)} className={`page-link p-1 w-8 border rounded ${number === currentPage ? 'bg-blue-500 text-white' : ''}`}>
                                 {number}
                             </button>
                         </li>
                     ))}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            className="page-link p-1 w-8 border rounded mx-1"
+                            disabled={currentPage === totalPages}
+                        >
+                            &rsaquo;
+                        </button>
+                    </li>
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button
+                            onClick={() => paginate(totalPages)}
+                            className="page-link p-1 w-8 border rounded mx-1"
+                            disabled={currentPage === totalPages}
+                        >
+                            &raquo;
+                        </button>
+                    </li>
                 </ul>
             </nav>
         </div>
